@@ -1,4 +1,4 @@
-module git.sogou-inc.com/shequ_arch/common/zapWrapper
+module github.com/Celephaiss/zapWrapper
 
 go 1.15
 
