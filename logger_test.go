@@ -1,13 +1,12 @@
 package zapWrapper
 
 import (
-	"go.uber.org/zap/zapcore"
 	"sync"
 	"testing"
 )
 
 func TestLogger(t *testing.T) {
-	Init("./test.log", zapcore.DebugLevel)
+	Init("./test.log", "info")
 
 	wg := sync.WaitGroup{}
 
@@ -20,7 +19,7 @@ func TestLogger(t *testing.T) {
 
 			for i := 0; i < 1000; i++ {
 
-				l1.Error("this is a test")
+				l1.Info("this is a test")
 			}
 
 		}()

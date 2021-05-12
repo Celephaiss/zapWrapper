@@ -7,7 +7,7 @@ import "github.com/Celephaiss/zapWrapper"
 
 
 // 只需要Init一次
-zapWrapper.Init("./test.log", zapcore.DebugLevel)
+zapWrapper.Init("./test.log", "debug")
 
 // 在不同的goroutine里面调用NewSugar(name)获得同一个logger，
 // 可以通过传入不同的name来标识goroutine

@@ -8,10 +8,16 @@ import (
 
 var log *zap.Logger
 
-func Init(filePath string, level zapcore.Level) {
+var str2level = map[string]zapcore.Level{
+	"debug": zapcore.DebugLevel,
+	"info":  zapcore.InfoLevel,
+	"error": zapcore.ErrorLevel,
+}
+
+func Init(filePath, logLevel string) {
 	hook := lumberjack.Logger{
 		Filename:   filePath, // 日志文件路径
-		MaxSize:    500,      // megabytes
+		MaxSize:    128,      // megabytes
 		MaxBackups: 3,        // 最多保留300个备份
 		MaxAge:     7,        // days
 		Compress:   true,     // 是否压缩 disabled by default
@@ -31,6 +37,12 @@ func Init(filePath string, level zapcore.Level) {
 		EncodeCaller:   zapcore.ShortCallerEncoder,     // 全路径编码器
 		EncodeName:     zapcore.FullNameEncoder,
 	} // 格式
+
+	level, ok := str2level[logLevel]
+	if !ok {
+		level = zapcore.InfoLevel
+	}
+
 	core := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(encoderConfig),
 		zapcore.NewMultiWriteSyncer(zapcore.AddSync(&hook)), // 打印到控制台和文件,
