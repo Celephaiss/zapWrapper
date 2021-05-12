@@ -11,7 +11,7 @@ var log *zap.Logger
 func Init(filePath string, level zapcore.Level) {
 	hook := lumberjack.Logger{
 		Filename:   filePath, // 日志文件路径
-		MaxSize:    1,        // megabytes
+		MaxSize:    500,      // megabytes
 		MaxBackups: 3,        // 最多保留300个备份
 		MaxAge:     7,        // days
 		Compress:   true,     // 是否压缩 disabled by default
