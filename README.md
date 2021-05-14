@@ -1,6 +1,18 @@
+## Table of Contents
+- [Background](#background)
+- [Install](#install)
+- [Usage](#usage)
+- [Features](#features)
 
 
-## 使用方式
+### Background
+
+### Install
+
+
+
+
+### Usage
 
 ```go
 
@@ -27,4 +39,10 @@ l2.Error("this is another test")
 
 
 ```
+
+
+### Features
+
+1. 日志切割
+2. 将不同级别的日志输出到不同文件
 
