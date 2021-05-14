@@ -6,7 +6,7 @@ import (
 )
 
 func TestLogger(t *testing.T) {
-	Init("./test.log", "info")
+	Init("./test.logger", "info")
 
 	wg := sync.WaitGroup{}
 
@@ -26,5 +26,13 @@ func TestLogger(t *testing.T) {
 	}
 
 	wg.Wait()
+}
+
+// 根据日志级别将日志输出到不同的文件
+func TestOutputToDifferentFileAccordingToLevel(t *testing.T) {
+	Init2(&LoggerConfig{InfoPath: "./info.log", DefaultPath: "./debug.log"})
+	logger := NewSugar("test")
+	logger.Debug("hello")
+	logger.Info("world")
 
 }
