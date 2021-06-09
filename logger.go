@@ -50,7 +50,7 @@ var levels = []zapcore.Level{
 	zapcore.FatalLevel,
 }
 
-func newHookedCore(filePath string, level zapcore.Level) zapcore.Core {
+func newHookedCore(filePath string, level zapcore.Level, enab zap.LevelEnablerFunc) zapcore.Core {
 	hook := lumberjack.Logger{
 		Filename:   filePath, // 日志文件路径
 		MaxSize:    128,      // 日志文件最大为128MB
@@ -74,14 +74,14 @@ func newHookedCore(filePath string, level zapcore.Level) zapcore.Core {
 		EncodeName:     zapcore.FullNameEncoder,
 	} // 格式
 
-	l := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl == level
-	})
+	//l := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+	//	return lvl == level
+	//})
 
 	core := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(encoderConfig),
 		zapcore.NewMultiWriteSyncer(zapcore.AddSync(&hook)),
-		l,
+		enab,
 	)
 
 	return core
@@ -96,7 +96,12 @@ func Init(filePath, logLevel string) {
 
 	caller := zap.AddCaller()
 	development := zap.Development()
-	logger = zap.New(newHookedCore(filePath, level), caller, development)
+
+	enab := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= level
+	})
+
+	logger = zap.New(newHookedCore(filePath, level, enab), caller, development)
 
 	zap.ReplaceGlobals(logger)
 }
@@ -107,12 +112,17 @@ func Init2(config *LoggerConfig) {
 
 	r := reflect.ValueOf(config)
 	for idx, field := range fields {
-		f := reflect.Indirect(r).FieldByName(field).String()
-		if f != "" {
-			cores = append(cores, newHookedCore(f, levels[idx]))
+		fieldValue := reflect.Indirect(r).FieldByName(field).String()
+
+		l := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+			return lvl == levels[idx]
+		})
+
+		if fieldValue != "" {
+			cores = append(cores, newHookedCore(fieldValue, levels[idx], l))
 		} else {
 			if config.DefaultPath != "" {
-				cores = append(cores, newHookedCore(config.DefaultPath, levels[idx]))
+				cores = append(cores, newHookedCore(config.DefaultPath, levels[idx], l))
 			}
 		}
 	}
