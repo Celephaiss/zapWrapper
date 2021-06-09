@@ -50,7 +50,7 @@ var levels = []zapcore.Level{
 	zapcore.FatalLevel,
 }
 
-func newHookedCore(filePath string, level zapcore.Level, enab zap.LevelEnablerFunc) zapcore.Core {
+func newHookedCore(filePath string, enab zap.LevelEnablerFunc) zapcore.Core {
 	hook := lumberjack.Logger{
 		Filename:   filePath, // 日志文件路径
 		MaxSize:    128,      // 日志文件最大为128MB
@@ -101,7 +101,7 @@ func Init(filePath, logLevel string) {
 		return lvl >= level
 	})
 
-	logger = zap.New(newHookedCore(filePath, level, enab), caller, development)
+	logger = zap.New(newHookedCore(filePath, enab), caller, development)
 
 	zap.ReplaceGlobals(logger)
 }
@@ -119,10 +119,10 @@ func Init2(config *LoggerConfig) {
 		})
 
 		if fieldValue != "" {
-			cores = append(cores, newHookedCore(fieldValue, levels[idx], l))
+			cores = append(cores, newHookedCore(fieldValue, l))
 		} else {
 			if config.DefaultPath != "" {
-				cores = append(cores, newHookedCore(config.DefaultPath, levels[idx], l))
+				cores = append(cores, newHookedCore(config.DefaultPath, l))
 			}
 		}
 	}
